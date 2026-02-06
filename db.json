@@ -1,0 +1,76 @@
+{
+  "prestamos": [
+    {
+      "id": "1766739677996",
+      "nombre": "owen",
+      "telefono": "924124676",
+      "motivo": "prestamo para un juego",
+      "monto": 200,
+      "monto_pagado": 100,
+      "saldo": 100,
+      "estado": "Deuda",
+      "fecha": "2002-01-29",
+      "cuotas": "3",
+      "fecha_limite": "3111-04-30",
+      "evidencia": null,
+      "pagos": [
+        {
+          "id": "1766739709324",
+          "prestamoId": "1766739677996",
+          "cliente": "owen",
+          "monto": 100,
+          "fecha": "9999-09-29"
+        }
+      ],
+      "userId": "1765303038145"
+    },
+    {
+      "id": "1768737641911",
+      "nombre": "Owen Barahona ",
+      "telefono": "924124676",
+      "motivo": "quiero comprarme un juego",
+      "monto": 300,
+      "monto_pagado": 100,
+      "saldo": 200,
+      "estado": "Deuda",
+      "fecha": "2026-01-19",
+      "cuotas": "3",
+      "fecha_limite": "2026-03-19",
+      "evidencia": "1768737641907-Plan de estudios.pdf",
+      "pagos": [
+        {
+          "id": "1768737684932",
+          "prestamoId": "1768737641911",
+          "cliente": "Owen Barahona ",
+          "monto": 100,
+          "fecha": "2026-01-20"
+        }
+      ],
+      "userId": "1765303038145"
+    },
+    {
+      "id": "1769469528259",
+      "nombre": "Owen Barahona Mallqui",
+      "telefono": "924124676",
+      "motivo": "Prestamo",
+      "monto": 900,
+      "monto_pagado": 0,
+      "saldo": 900,
+      "estado": "Pendiente",
+      "fecha": "2026-01-26",
+      "cuotas": "9",
+      "fecha_limite": "2026-10-26",
+      "evidencia": null,
+      "pagos": [],
+      "userId": "1765303038145"
+    }
+  ],
+  "users": [
+    {
+      "id": "1765303038145",
+      "username": "Owen",
+      "email": "test@gmail.com",
+      "password": "$2b$10$56uH8sarPZZyslkjhrH44OAqR7v8S7I2XWAysolJhQ4PQIIzWp1YG"
+    }
+  ]
+}
