@@ -47,22 +47,6 @@
         }
       ],
       "userId": "1765303038145"
-    },
-    {
-      "id": "1769469528259",
-      "nombre": "Owen Barahona Mallqui",
-      "telefono": "924124676",
-      "motivo": "Prestamo",
-      "monto": 900,
-      "monto_pagado": 0,
-      "saldo": 900,
-      "estado": "Pendiente",
-      "fecha": "2026-01-26",
-      "cuotas": "9",
-      "fecha_limite": "2026-10-26",
-      "evidencia": null,
-      "pagos": [],
-      "userId": "1765303038145"
     }
   ],
   "users": [

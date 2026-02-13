@@ -14,29 +14,46 @@ function saveDB(data) {
 // Registrar préstamo
 export function registrarPrestamo(req, res) {
   const {
-    nombre,
+    nombres,      // Nuevo
+    apellidos,    // Nuevo
+    nombre,       // Mantenemos por compatibilidad si se envía
     telefono,
     motivo,
     monto,
     fecha,
     cuotas,
-    fecha_limite
+    fecha_limite,
+    moneda        // Nuevo: PEN o USD
   } = req.body;
 
   const evidencia = req.file ? req.file.filename : null;
 
   const db = readDB();
 
+  // Lógica para nombres
+  let nombreCompleto = nombre;
+  if (nombres && apellidos) {
+    nombreCompleto = `${nombres} ${apellidos}`.trim();
+  } else if (!nombre && nombres) {
+    nombreCompleto = nombres;
+  }
+  
+  // Lógica para moneda (default PEN)
+  const monedaFinal = moneda || "PEN";
+
   const nuevoPrestamo = {
     id: Date.now().toString(),      // ID único
-    nombre,                         // Nombre del cliente
+    nombres: nombres || "",
+    apellidos: apellidos || "",
+    nombre: nombreCompleto,         // Nombre completo para compatibilidad
     telefono,
     motivo,
 
     monto: Number(monto),           // TOTAL del préstamo
+    moneda: monedaFinal,            // Guardamos la moneda
     monto_pagado: 0,                // Aún no paga nada
-    saldo: Number(monto),            // Al inicio debe todo
-    estado: "Pendiente",             // Estado inicial
+    saldo: Number(monto),           // Al inicio debe todo
+    estado: "Pendiente",            // Estado inicial
 
     fecha,
     cuotas,
@@ -169,6 +186,9 @@ export function descargarVoucherPDF(req, res) {
 
   doc.pipe(res);
 
+  // Definir símbolo de moneda
+  const simbolo = prestamoEncontrado.moneda === "USD" ? "$" : "S/";
+
   // ---- CONTENIDO DEL PDF ----
   doc
     .fontSize(20)
@@ -177,13 +197,19 @@ export function descargarVoucherPDF(req, res) {
 
   doc.fontSize(12);
   doc.text(`Cliente: ${prestamoEncontrado.nombre}`);
+  // Mostrar nombres y apellidos por separado si existen
+  if (prestamoEncontrado.nombres || prestamoEncontrado.apellidos) {
+      doc.text(`(Nombres: ${prestamoEncontrado.nombres || ""} - Apellidos: ${prestamoEncontrado.apellidos || ""})`);
+  }
+  
   doc.text(`Teléfono: ${prestamoEncontrado.telefono}`);
   doc.text(`ID Préstamo: ${prestamoEncontrado.id}`);
+  doc.text(`Moneda: ${prestamoEncontrado.moneda === "USD" ? "Dólares Americanos" : "Soles"}`);
   doc.moveDown();
 
-  doc.text(`Monto Pagado: S/ ${pagoEncontrado.monto}`);
+  doc.text(`Monto Pagado: ${simbolo} ${pagoEncontrado.monto}`);
   doc.text(`Fecha de Pago: ${pagoEncontrado.fecha}`);
-  doc.text(`Saldo Pendiente: S/ ${prestamoEncontrado.saldo}`);
+  doc.text(`Saldo Pendiente: ${simbolo} ${prestamoEncontrado.saldo}`);
   doc.text(`Estado del Préstamo: ${prestamoEncontrado.estado}`);
   doc.moveDown(2);
 
