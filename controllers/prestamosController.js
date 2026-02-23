@@ -37,7 +37,7 @@ export function registrarPrestamo(req, res) {
   } else if (!nombre && nombres) {
     nombreCompleto = nombres;
   }
-  
+
   // Lógica para moneda (default PEN)
   const monedaFinal = moneda || "PEN";
 
@@ -93,6 +93,7 @@ export function eliminarPrestamo(req, res) {
 export function registrarPago(req, res) {
   const { id } = req.params;
   const { monto, fecha } = req.body;
+  const evidencia = req.file ? req.file.filename : null;
 
   const db = readDB();
   const prestamo = db.prestamos.find(p => p.id === id);
@@ -126,6 +127,7 @@ export function registrarPago(req, res) {
     cliente: prestamo.nombre,
     monto: pago,
     fecha: fecha || new Date().toISOString().split("T")[0],
+    evidencia: evidencia, // Guardamos la evidencia
   };
 
   prestamo.pagos.push(nuevoPago);
@@ -137,6 +139,31 @@ export function registrarPago(req, res) {
     pago: nuevoPago,
     prestamo
   });
+}
+
+// Obtener evidencia de pago
+export function obtenerEvidenciaPago(req, res) {
+  const { id } = req.params;
+  const db = readDB();
+
+  let pagoEncontrado = null;
+  db.prestamos.forEach(p => {
+    if (p.pagos) {
+      const pago = p.pagos.find(pg => pg.id === id);
+      if (pago) pagoEncontrado = pago;
+    }
+  });
+
+  if (!pagoEncontrado || !pagoEncontrado.evidencia) {
+    return res.status(404).json({ message: "Evidencia no encontrada" });
+  }
+
+  const filePath = path.join(process.cwd(), "uploads", pagoEncontrado.evidencia);
+  if (fs.existsSync(filePath)) {
+    res.download(filePath);
+  } else {
+    res.status(404).json({ message: "Archivo físico no encontrado" });
+  }
 }
 
 export function obtenerPagos(req, res) {
@@ -199,9 +226,9 @@ export function descargarVoucherPDF(req, res) {
   doc.text(`Cliente: ${prestamoEncontrado.nombre}`);
   // Mostrar nombres y apellidos por separado si existen
   if (prestamoEncontrado.nombres || prestamoEncontrado.apellidos) {
-      doc.text(`(Nombres: ${prestamoEncontrado.nombres || ""} - Apellidos: ${prestamoEncontrado.apellidos || ""})`);
+    doc.text(`(Nombres: ${prestamoEncontrado.nombres || ""} - Apellidos: ${prestamoEncontrado.apellidos || ""})`);
   }
-  
+
   doc.text(`Teléfono: ${prestamoEncontrado.telefono}`);
   doc.text(`ID Préstamo: ${prestamoEncontrado.id}`);
   doc.text(`Moneda: ${prestamoEncontrado.moneda === "USD" ? "Dólares Americanos" : "Soles"}`);
@@ -216,6 +243,77 @@ export function descargarVoucherPDF(req, res) {
   doc.text("Gracias por su pago.", { align: "center" });
 
   doc.end();
+}
+
+// Editar préstamo
+export function editarPrestamo(req, res) {
+  const { id } = req.params;
+  const {
+    nombres,
+    apellidos,
+    nombre,
+    telefono,
+    motivo,
+    monto,
+    fecha,
+    cuotas,
+    fecha_limite,
+    moneda
+  } = req.body;
+
+  const db = readDB();
+  const prestamo = db.prestamos.find(p => p.id === id);
+
+  if (!prestamo) {
+    return res.status(404).json({ message: "Préstamo no encontrado" });
+  }
+
+  // Verificar pertenencia (opcional pero recomendado)
+  if (prestamo.userId !== req.user.id) {
+    return res.status(403).json({ message: "No tiene permiso para editar este préstamo" });
+  }
+
+  // Actualizar evidencia si se sube un archivo nuevo
+  if (req.file) {
+    // Podríamos eliminar el archivo anterior aquí si existiera
+    prestamo.evidencia = req.file.filename;
+  }
+
+  // Lógica para nombres
+  if (nombres !== undefined) prestamo.nombres = nombres;
+  if (apellidos !== undefined) prestamo.apellidos = apellidos;
+
+  if (nombres !== undefined || apellidos !== undefined) {
+    prestamo.nombre = `${nombres || prestamo.nombres} ${apellidos || prestamo.apellidos}`.trim();
+  } else if (nombre !== undefined) {
+    prestamo.nombre = nombre;
+  }
+
+  if (telefono !== undefined) prestamo.telefono = telefono;
+  if (motivo !== undefined) prestamo.motivo = motivo;
+  if (fecha !== undefined) prestamo.fecha = fecha;
+  if (cuotas !== undefined) prestamo.cuotas = cuotas;
+  if (fecha_limite !== undefined) prestamo.fecha_limite = fecha_limite;
+  if (moneda !== undefined) prestamo.moneda = moneda;
+
+  // Si cambia el monto, recalculamos el saldo
+  if (monto !== undefined) {
+    const nuevoMontoTotal = Number(monto);
+    prestamo.monto = nuevoMontoTotal;
+    prestamo.saldo = nuevoMontoTotal - (prestamo.monto_pagado || 0);
+
+    // Actualizar estado basado en el nuevo saldo
+    if (prestamo.saldo <= 0) {
+      prestamo.estado = "Cancelado";
+    } else {
+      // Si antes estaba Cancelado y ahora tiene saldo, vuelve a Pendiente o Deuda
+      prestamo.estado = "Deuda";
+    }
+  }
+
+  saveDB(db);
+
+  res.json({ message: "Préstamo actualizado correctamente", prestamo });
 }
 
 

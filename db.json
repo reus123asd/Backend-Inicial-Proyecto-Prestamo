@@ -26,16 +26,16 @@
     },
     {
       "id": "1768737641911",
-      "nombre": "Owen Barahona ",
+      "nombre": "Owen Barahona",
       "telefono": "924124676",
       "motivo": "quiero comprarme un juego",
-      "monto": 300,
+      "monto": 999,
       "monto_pagado": 100,
-      "saldo": 200,
+      "saldo": 899,
       "estado": "Deuda",
       "fecha": "2026-01-19",
       "cuotas": "3",
-      "fecha_limite": "2026-03-19",
+      "fecha_limite": "2026-04-19",
       "evidencia": "1768737641907-Plan de estudios.pdf",
       "pagos": [
         {
@@ -44,6 +44,37 @@
           "cliente": "Owen Barahona ",
           "monto": 100,
           "fecha": "2026-01-20"
+        }
+      ],
+      "userId": "1765303038145",
+      "nombres": "Owen",
+      "apellidos": "Barahona ",
+      "moneda": "PEN"
+    },
+    {
+      "id": "1771818312294",
+      "nombres": "pepe",
+      "apellidos": "luis",
+      "nombre": "pepe luis",
+      "telefono": "922412467",
+      "motivo": "quiero comprarme un carro y una moto",
+      "monto": 900,
+      "moneda": "PEN",
+      "monto_pagado": 180,
+      "saldo": 720,
+      "estado": "Deuda",
+      "fecha": "2026-02-23",
+      "cuotas": "5",
+      "fecha_limite": "2026-07-23",
+      "evidencia": "1771818312288-Plan de estudios.pdf",
+      "pagos": [
+        {
+          "id": "1771818430507",
+          "prestamoId": "1771818312294",
+          "cliente": "pepe luis",
+          "monto": 180,
+          "fecha": "2026-02-23",
+          "evidencia": "1771818430501-CV_OWEN_BARAHONA.pdf"
         }
       ],
       "userId": "1765303038145"

@@ -7,7 +7,9 @@ import {
   eliminarPrestamo,
   obtenerPagos,
   descargarVoucherPDF,
-  registrarPago
+  registrarPago,
+  editarPrestamo,
+  obtenerEvidenciaPago
 } from "../controllers/prestamosController.js";
 
 const router = Router();
@@ -31,15 +33,18 @@ router.get("/", auth, obtenerPrestamos);
 // Eliminar préstamo
 router.delete("/:id", auth, eliminarPrestamo);
 
+// Editar préstamo
+router.patch("/:id", auth, upload.single("evidencia"), editarPrestamo);
+
 // Registrar pago
-router.post("/:id/pago", auth, registrarPago);
+router.post("/:id/pago", auth, upload.single("evidencia"), registrarPago);
 
 router.get("/pagos", auth, obtenerPagos);
 
 router.get(
-  "/pagos/:id/voucher/pdf",
+  "/pagos/:id/voucher",
   auth,
-  descargarVoucherPDF
+  obtenerEvidenciaPago
 );
 
 export default router;
