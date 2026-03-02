@@ -83,9 +83,19 @@
   "users": [
     {
       "id": "1765303038145",
-      "username": "Owen",
+      "nombres": "ADM",
+      "apellidos": "",
       "email": "test@gmail.com",
       "password": "$2b$10$56uH8sarPZZyslkjhrH44OAqR7v8S7I2XWAysolJhQ4PQIIzWp1YG"
+    },
+    {
+      "id": "1772423059400",
+      "nombres": "Owen",
+      "apellidos": "Barahona Mallqui",
+      "email": "mallquiowen@gmail.com",
+      "googleId": "iZk7dDhTnEU1K01yLW9Niorgq5j1",
+      "photoURL": "https://lh3.googleusercontent.com/a/ACg8ocK2eF_lA4M8DtPj-2J787uCl8FUlkG5Vy6OXoMqNiQqos7WZxU=s96-c",
+      "password": "OAUTH_USER"
     }
   ]
 }
