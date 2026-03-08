@@ -78,6 +78,25 @@
         }
       ],
       "userId": "1765303038145"
+    },
+    {
+      "id": "1772987123499",
+      "nombres": "lucho",
+      "apellidos": "juan",
+      "nombre": "lucho juan",
+      "telefono": "924124676",
+      "motivo": "quier comprarme una casa",
+      "monto": 500,
+      "moneda": "PEN",
+      "monto_pagado": 0,
+      "saldo": 500,
+      "estado": "Deuda",
+      "fecha": "2026-03-08",
+      "cuotas": "5",
+      "fecha_limite": "2026-08-08",
+      "evidencia": null,
+      "pagos": [],
+      "userId": "1765303038145"
     }
   ],
   "users": [

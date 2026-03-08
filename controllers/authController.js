@@ -80,7 +80,7 @@ export function login(req, res) {
 
   const token = jwt.sign(
     { id: user.id, email: user.email },
-    "SECRET_KEY",
+    process.env.JWT_SECRET || "SECRET_KEY",
     { expiresIn: "1d" }
   );
 
@@ -110,7 +110,7 @@ export function forgotPassword(req, res) {
   }
 
   // Generamos un token temporal
-  const resetToken = jwt.sign({ id: user.id }, "RESET_SECRET", { expiresIn: "1h" });
+  const resetToken = jwt.sign({ id: user.id }, process.env.RESET_SECRET || "RESET_SECRET", { expiresIn: "1h" });
 
   // En una app real, aquí enviaríamos un correo.
   // Por ahora lo simulamos devolviendo un mensaje de éxito.
@@ -131,7 +131,7 @@ export function resetPassword(req, res) {
   }
 
   try {
-    const decoded = jwt.verify(token, "RESET_SECRET");
+    const decoded = jwt.verify(token, process.env.RESET_SECRET || "RESET_SECRET");
     const db = readDB();
     const userIndex = db.users.findIndex(u => u.id === decoded.id);
 
@@ -182,7 +182,7 @@ export function googleLogin(req, res) {
 
   const token = jwt.sign(
     { id: user.id, email: user.email },
-    "SECRET_KEY",
+    process.env.JWT_SECRET || "SECRET_KEY",
     { expiresIn: "1d" }
   );
 

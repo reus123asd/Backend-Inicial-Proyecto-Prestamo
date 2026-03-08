@@ -77,6 +77,97 @@ export function obtenerPrestamos(req, res) {
   res.json(prestamos);
 }
 
+// Obtener estadísticas para Dashboard
+export function obtenerEstadisticas(req, res) {
+  const db = readDB();
+  const prestamosUsuario = db.prestamos.filter(p => p.userId === req.user.id);
+
+  const hoy = new Date().toISOString().split("T")[0];
+
+  let recaudadoHoyPEN = 0;
+  let recaudadoHoyUSD = 0;
+
+  prestamosUsuario.forEach(p => {
+    if (p.pagos) {
+      p.pagos.forEach(pago => {
+        if (pago.fecha === hoy) {
+          if (p.moneda === "USD") {
+            recaudadoHoyUSD += pago.monto;
+          } else {
+            recaudadoHoyPEN += pago.monto;
+          }
+        }
+      });
+    }
+  });
+
+  const stats = {
+    prestamosActivos: prestamosUsuario.filter(p => p.estado !== "Cancelado").length,
+    clientesTotales: [...new Set(prestamosUsuario.map(p => p.nombre))].length,
+    recaudadoHoy: {
+      PEN: recaudadoHoyPEN,
+      USD: recaudadoHoyUSD
+    },
+    ultimoPago: null
+  };
+
+  // Obtener último pago para actividad reciente
+  const todosLosPagos = [];
+  prestamosUsuario.forEach(p => {
+    if (p.pagos) {
+      p.pagos.forEach(pago => {
+        todosLosPagos.push({
+          ...pago,
+          moneda: p.moneda
+        });
+      });
+    }
+  });
+
+  stats.recientes = todosLosPagos
+    .sort((a, b) => Number(b.id) - Number(a.id))
+    .slice(0, 5);
+
+  // Solicitudes Pendientes
+  stats.solicitudesPendientes = db.prestamos
+    .filter(p => p.userId === req.user.id && p.estado === "Pendiente")
+    .map(p => ({
+      id: p.id,
+      nombre: p.nombre,
+      monto: p.monto,
+      moneda: p.moneda,
+      fecha: p.fecha
+    }));
+
+  res.json(stats);
+}
+
+// Gestionar solicitud (Aprobar/Rechazar)
+export function gestionarEstadoPrestamo(req, res) {
+  const { id } = req.params;
+  const { estado } = req.body; // 'Deuda' (Aprobado) o 'Rechazado'
+
+  if (!["Deuda", "Rechazado", "Pendiente"].includes(estado)) {
+    return res.status(400).json({ message: "Estado no válido" });
+  }
+
+  const db = readDB();
+  const prestamo = db.prestamos.find(p => p.id === id);
+
+  if (!prestamo) {
+    return res.status(404).json({ message: "Préstamo no encontrado" });
+  }
+
+  if (prestamo.userId !== req.user.id) {
+    return res.status(403).json({ message: "No tiene permiso" });
+  }
+
+  prestamo.estado = estado;
+  saveDB(db);
+
+  res.json({ message: `Préstamo ${estado === 'Deuda' ? 'aprobado' : 'actualizado'} correctamente`, prestamo });
+}
+
 // Eliminar préstamo
 export function eliminarPrestamo(req, res) {
   const db = readDB();

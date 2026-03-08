@@ -9,7 +9,9 @@ import {
   descargarVoucherPDF,
   registrarPago,
   editarPrestamo,
-  obtenerEvidenciaPago
+  obtenerEvidenciaPago,
+  obtenerEstadisticas,
+  gestionarEstadoPrestamo
 } from "../controllers/prestamosController.js";
 
 const router = Router();
@@ -30,11 +32,15 @@ router.post("/", auth, upload.single("evidencia"), registrarPrestamo);
 // Obtener préstamos del usuario logueado
 router.get("/", auth, obtenerPrestamos);
 
+// Obtener estadísticas
+router.get("/stats", auth, obtenerEstadisticas);
+
 // Eliminar préstamo
 router.delete("/:id", auth, eliminarPrestamo);
 
 // Editar préstamo
 router.patch("/:id", auth, upload.single("evidencia"), editarPrestamo);
+router.patch("/:id/estado", auth, gestionarEstadoPrestamo);
 
 // Registrar pago
 router.post("/:id/pago", auth, upload.single("evidencia"), registrarPago);

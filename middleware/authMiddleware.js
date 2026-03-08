@@ -9,11 +9,10 @@ export function auth(req, res, next) {
   const token = authHeader.split(" ")[1];
 
   try {
-    const decoded = jwt.verify(token, "SECRET_KEY"); // Debe ser el mismo del login
-    req.user = decoded; // ⬅️ Esto permite que getProfile reciba el ID del usuario
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || "SECRET_KEY");
+    req.user = decoded;
     next();
   } catch (error) {
     return res.status(403).json({ message: "Token inválido o expirado" });
   }
 }
-  
